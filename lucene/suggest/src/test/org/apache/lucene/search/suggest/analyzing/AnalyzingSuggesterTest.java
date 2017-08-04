@@ -1232,10 +1232,9 @@ public class AnalyzingSuggesterTest extends LuceneTestCase {
       suggester.build(new InputArrayIterator(new Input[] {
             new Input(bigString, 7)}));
       fail("did not hit expected exception");
-    } catch (StackOverflowError soe) {
-      // OK
     } catch (IllegalArgumentException iae) {
       // expected
+      assertTrue(iae.getMessage().contains("input automaton is too large"));
     }
     a.close();
   }
