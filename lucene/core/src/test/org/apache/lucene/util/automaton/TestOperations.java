@@ -52,7 +52,8 @@ public class TestOperations extends LuceneTestCase {
     for (BytesRef bref : strings) {
       eachIndividual[i++] = Automata.makeString(bref.utf8ToString());
     }
-    return Operations.determinize(Operations.union(Arrays.asList(eachIndividual)), DEFAULT_MAX_DETERMINIZED_STATES);
+    return Operations.determinize(Operations.union(Arrays.asList(eachIndividual)),
+      DEFAULT_MAX_DETERMINIZED_STATES);
   }
 
   /** Test concatenation with empty language returns empty */
@@ -60,7 +61,6 @@ public class TestOperations extends LuceneTestCase {
     Automaton a = Automata.makeString("a");
     Automaton concat = Operations.concatenate(a, Automata.makeEmpty());
     assertTrue(Operations.isEmpty(concat));
-
   }
   
   /** Test optimization to concatenate() with empty String to an NFA */
@@ -122,28 +122,6 @@ public class TestOperations extends LuceneTestCase {
       Automaton a = AutomatonTestUtil.randomAutomaton(random());
       assertEquals(AutomatonTestUtil.isFiniteSlow(a), Operations.isFinite(a));
     }
-  }
-
-  public void testIsFiniteEatsStack() {
-    char[] chars = new char[50000];
-    TestUtil.randomFixedLengthUnicodeString(random(), chars, 0, chars.length);
-    String bigString1 = new String(chars);
-    TestUtil.randomFixedLengthUnicodeString(random(), chars, 0, chars.length);
-    String bigString2 = new String(chars);
-    Automaton a = Operations.union(Automata.makeString(bigString1), Automata.makeString(bigString2));
-    IllegalArgumentException exc = expectThrows(IllegalArgumentException.class, () -> Operations.isFinite(a));
-    assertTrue(exc.getMessage().contains("input automaton is too large"));
-  }
-
-  public void testTopoSortEatsStack() {
-    char[] chars = new char[50000];
-    TestUtil.randomFixedLengthUnicodeString(random(), chars, 0, chars.length);
-    String bigString1 = new String(chars);
-    TestUtil.randomFixedLengthUnicodeString(random(), chars, 0, chars.length);
-    String bigString2 = new String(chars);
-    Automaton a = Operations.union(Automata.makeString(bigString1), Automata.makeString(bigString2));
-    IllegalArgumentException exc = expectThrows(IllegalArgumentException.class, () -> Operations.topoSortStates(a));
-    assertTrue(exc.getMessage().contains("input automaton is too large"));
   }
 
   /**
